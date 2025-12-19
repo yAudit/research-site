@@ -41,7 +41,7 @@ In some variants, calls to the proxy are only forwarded if the caller matches an
 * [Synthetix](https://github.com/Synthetixio/synthetix/pull/1191)
 
 ### Known vulnerabilities
-* [Delegatecall and selfdestruct not allowed in implementation](https://github.com/electisec/Solidity-Proxy-Playground/tree/main/src/delegatecall_with_selfdestruct/UUPS_selfdestruct)
+* [Delegatecall and selfdestruct not allowed in implementation](https://github.com/yaudit/Solidity-Proxy-Playground/tree/main/src/delegatecall_with_selfdestruct/UUPS_selfdestruct)
 
 ### Variations
 * [The EIP-1167 standard](https://eips.ethereum.org/EIPS/eip-1167) was created in June '18 with the goal of standardizing a way to clone contract functionality simply, cheaply, and in an immutable way.  This standard contains a minimal bytecode redirect implementation that has been optimized for the proxy contract. This is often used with a [factory pattern](https://github.com/optionality/clone-factory).
@@ -87,7 +87,7 @@ Instead, an `initialize()` function is used to set initial storage values:
 * This feature is used with most modern proxy types including TPP and UUPS, except for use cases where there is no need to set storage upon proxy deployment.
 
 ### Known vulnerabilities
-* [Uninitialized proxy](https://github.com/electisec/Solidity-Proxy-Playground/tree/main/src/uninitialized/UUPS_Uninitialized)
+* [Uninitialized proxy](https://github.com/yaudit/Solidity-Proxy-Playground/tree/main/src/uninitialized/UUPS_Uninitialized)
 
 ### Variations
 * [Clone factory contract model](https://github.com/optionality/clone-factory) - uses clone initialization in a creation transaction.
@@ -129,10 +129,10 @@ For security, it is also recommended to use a form of access control to differen
 * This basic style is not widely used anymore.
 
 ### Known vulnerabilities
-* [Delegatecall and selfdestruct not allowed in implementation](https://github.com/electisec/Solidity-Proxy-Playground/tree/main/src/delegatecall_with_selfdestruct/UUPS_selfdestruct)
-* [Uninitialized proxy](https://github.com/electisec/Solidity-Proxy-Playground/tree/main/src/uninitialized/UUPS_Uninitialized)
-* [Storage collision](https://github.com/electisec/Solidity-Proxy-Playground/tree/main/src/storage_collision)
-* [Function clashing](https://github.com/electisec/Solidity-Proxy-Playground/tree/main/src/function_clashing)
+* [Delegatecall and selfdestruct not allowed in implementation](https://github.com/yaudit/Solidity-Proxy-Playground/tree/main/src/delegatecall_with_selfdestruct/UUPS_selfdestruct)
+* [Uninitialized proxy](https://github.com/yaudit/Solidity-Proxy-Playground/tree/main/src/uninitialized/UUPS_Uninitialized)
+* [Storage collision](https://github.com/yaudit/Solidity-Proxy-Playground/tree/main/src/storage_collision)
+* [Function clashing](https://github.com/yaudit/Solidity-Proxy-Playground/tree/main/src/function_clashing)
 
 ### Further reading
 * [The First Proxy Contract](https://ethereum-blockchain-developer.com/110-upgrade-smart-contracts/05-proxy-nick-johnson/)
@@ -177,9 +177,9 @@ Instead the address is stored in a pre-agreed upon slot. For example [OpenZeppel
 
 
 ### Known vulnerabilities
-* [Delegatecall and selfdestruct not allowed in implementation](https://github.com/electisec/Solidity-Proxy-Playground/tree/main/src/delegatecall_with_selfdestruct/UUPS_selfdestruct)
-* [Uninitialized proxy](https://github.com/electisec/Solidity-Proxy-Playground/tree/main/src/uninitialized/UUPS_Uninitialized)
-* [Function clashing](https://github.com/electisec/Solidity-Proxy-Playground/tree/main/src/function_clashing/UUPS_functionClashing)
+* [Delegatecall and selfdestruct not allowed in implementation](https://github.com/yaudit/Solidity-Proxy-Playground/tree/main/src/delegatecall_with_selfdestruct/UUPS_selfdestruct)
+* [Uninitialized proxy](https://github.com/yaudit/Solidity-Proxy-Playground/tree/main/src/uninitialized/UUPS_Uninitialized)
+* [Function clashing](https://github.com/yaudit/Solidity-Proxy-Playground/tree/main/src/function_clashing/UUPS_functionClashing)
 
 ### Further reading
 * [EIP-1967 Standard Proxy Storage Slots](https://ethereum-blockchain-developer.com/110-upgrade-smart-contracts/09-eip-1967/)
@@ -234,9 +234,9 @@ require(msg.sender != _getAdmin(), "TransparentUpgradeableProxy: admin cannot fa
 * [Hundreds of projects on Github](https://github.com/search?q=adminupgradeabilityproxy&type=Code)
 
 ### Known vulnerabilities
-* [Delegatecall and selfdestruct not allowed in implementation](https://github.com/electisec/Solidity-Proxy-Playground/tree/main/src/delegatecall_with_selfdestruct/UUPS_selfdestruct)
-* [Uninitialized proxy](https://github.com/electisec/Solidity-Proxy-Playground/tree/main/src/uninitialized/UUPS_Uninitialized)
-* [Storage collision](https://github.com/electisec/Solidity-Proxy-Playground/tree/main/src/storage_collision)
+* [Delegatecall and selfdestruct not allowed in implementation](https://github.com/yaudit/Solidity-Proxy-Playground/tree/main/src/delegatecall_with_selfdestruct/UUPS_selfdestruct)
+* [Uninitialized proxy](https://github.com/yaudit/Solidity-Proxy-Playground/tree/main/src/uninitialized/UUPS_Uninitialized)
+* [Storage collision](https://github.com/yaudit/Solidity-Proxy-Playground/tree/main/src/storage_collision)
 
 ### Further reading
 * [The Transparent Proxy Pattern](https://blog.openzeppelin.com/the-transparent-proxy-pattern/)
@@ -281,9 +281,9 @@ This proxy contract usually incorporates [EIP-1967](#eip-1967-upgradeable-proxy)
 * [Hundreds of projects on Github](https://github.com/search?q=UUPSUpgradeable&type=code)
 
 ### Known vulnerabilities
-* [Uninitialized proxy](https://github.com/electisec/Solidity-Proxy-Playground/tree/main/src/uninitialized/UUPS_Uninitialized)
-* [Function clashing](https://github.com/electisec/Solidity-Proxy-Playground/tree/main/src/function_clashing)
-* [Selfdestruct](https://github.com/electisec/Solidity-Proxy-Playground/tree/main/src/delegatecall_with_selfdestruct/UUPS_selfdestruct)
+* [Uninitialized proxy](https://github.com/yaudit/Solidity-Proxy-Playground/tree/main/src/uninitialized/UUPS_Uninitialized)
+* [Function clashing](https://github.com/yaudit/Solidity-Proxy-Playground/tree/main/src/function_clashing)
+* [Selfdestruct](https://github.com/yaudit/Solidity-Proxy-Playground/tree/main/src/delegatecall_with_selfdestruct/UUPS_selfdestruct)
 
 
 ### Further reading
@@ -326,9 +326,9 @@ Both the beacon address on the proxy as well as the implementation contract addr
 * [Dharma](https://github.com/dharma-eng/dharma-smart-wallet/blob/master/contracts/proxies/smart-wallet/UpgradeBeaconProxyV1.sol)
 
 ### Known vulnerabilities
-* [Delegatecall and selfdestruct not allowed in implementation](https://github.com/electisec/Solidity-Proxy-Playground/tree/main/src/delegatecall_with_selfdestruct/UUPS_selfdestruct)
-* [Uninitialized proxy](https://github.com/electisec/Solidity-Proxy-Playground/tree/main/src/uninitialized/UUPS_Uninitialized)
-* [Function clashing](https://github.com/electisec/Solidity-Proxy-Playground/tree/main/src/function_clashing)
+* [Delegatecall and selfdestruct not allowed in implementation](https://github.com/yaudit/Solidity-Proxy-Playground/tree/main/src/delegatecall_with_selfdestruct/UUPS_selfdestruct)
+* [Uninitialized proxy](https://github.com/yaudit/Solidity-Proxy-Playground/tree/main/src/uninitialized/UUPS_Uninitialized)
+* [Function clashing](https://github.com/yaudit/Solidity-Proxy-Playground/tree/main/src/function_clashing)
 
 ### Variations
 * Immutable Beacon address - To save gas, the beacon address can be made immutable in the proxy contract.  The implementation contract would still be settable by updating it on the beacon.
@@ -382,7 +382,7 @@ Glossary of Diamond proxy uses a unique vocabulary:
 * [Complete list of examples](https://github.com/mudgen/awesome-diamonds#projects-using-diamonds).
 
 ### Known vulnerabilities
-* [Delegatecall and selfdestruct not allowed in implementation](https://github.com/electisec/Solidity-Proxy-Playground/tree/main/src/delegatecall_with_selfdestruct/UUPS_selfdestruct)
+* [Delegatecall and selfdestruct not allowed in implementation](https://github.com/yaudit/Solidity-Proxy-Playground/tree/main/src/delegatecall_with_selfdestruct/UUPS_selfdestruct)
 
 ### Variations
 * [vtable](https://github.com/OpenZeppelin/openzeppelin-labs/tree/master/upgradeability_with_vtable)

@@ -20,7 +20,7 @@ Note: If you are unsure which proxy type is in the scope of your audit or securi
 
 ## Uninitialized Proxy Vulnerability
 
-[Playground Link](https://github.com/electisec/Solidity-Proxy-Playground/tree/main/src/uninitialized)
+[Playground Link](https://github.com/yaudit/Solidity-Proxy-Playground/tree/main/src/uninitialized)
 
 Why do proxies need an `initialize` function when a contract constructor is called automatically? The reason is explained [here by OpenZeppelin](https://docs.openzeppelin.com/upgrades-plugins/1.x/proxies#the-constructor-caveat). The code in a contract's constructor is run once at deployment, but there is no way to run constructor code of the implementation contract (AKA logic contract) *in the context* of the proxy contract. Because the implementation contract must store the value of the `_initialized` variable in the proxy contract context, the constructor cannot be used for this purpose, because the implementation contract's constructor code will always run in the context of the implementation contract. This is why there exists an `initialize` function in the implementation contract - because the `initialize` call must happen through the proxy. Because the initialize call must happen as a separate step from the implementation contract deployment, there is a potential race condition that can happen that should also received attention, such as by protecting the `initialize` function with an address control modifier so only a specific `msg.sender` can initialize the function.
 
@@ -60,7 +60,7 @@ None?
 
 ## Storage Collision Vulnerability
 
-[Playground Link](https://github.com/electisec/Solidity-Proxy-Playground/tree/main/src/storage_collision)
+[Playground Link](https://github.com/yaudit/Solidity-Proxy-Playground/tree/main/src/storage_collision)
 
 A storage collision happens when the storage slot layout in the implementation contract does not match the storage slot layout in the proxy contract. This causes a problem because the `delegatecall` in the proxy contract means that the implementation contract is using the proxy contract's storage, but the variables in the implementation contract determine where that data is stored. If there is a mismatch between the proxy contract storage slots and the implementation contract storage slots, a storage collision can happen.
 
@@ -121,7 +121,7 @@ None?
 
 ## Function Clashing Vulnerability
 
-[Playground Link](https://github.com/electisec/Solidity-Proxy-Playground/tree/main/src/function_clashing)
+[Playground Link](https://github.com/yaudit/Solidity-Proxy-Playground/tree/main/src/function_clashing)
 
 Function clashing is a result of compiled smart contracts using a 4 byte identifier (derived from the function name's hash) to identify functions, known as a [function selector](https://docs.soliditylang.org/en/latest/abi-spec.html#function-selector). Functions with different names can contain identical 4 bytes identifiers when the first 32 bits of their hashes are the same. The compiler will detect when the same 4 byte function selector exists twice in a single contract, but it does not prevent the same 4 byte function selector from existing in different contracts of a project.
 
@@ -153,7 +153,7 @@ None?
 
 ## Metamorphic Contract Rug Vulnerability
 
-[Playground Link](https://github.com/electisec/Solidity-Proxy-Playground/tree/main/src/metamorphic_rug)
+[Playground Link](https://github.com/yaudit/Solidity-Proxy-Playground/tree/main/src/metamorphic_rug)
 
 The CREATE2 opcode was introduced in the Constantinople hardfork with [EIP-1014](https://eips.ethereum.org/EIPS/eip-1014). It allows a contract to be deployed at an address that can be calculated in advance, unlike the CREATE opcode. It is possible to deploy a contract, destroy the contract with `selfdestruct`, and then deploy a new contract with different code at the same address as the original contract. If a user is unaware that the code at this address changed since they originally interacted with the contract, they might end up interacting with a malicious contract. The planned removal of the `selfdestruct` opcode with [EIP-4758](https://eips.ethereum.org/EIPS/eip-4758) will remove the ability to create metamorphic contracts in the future.
 
@@ -190,7 +190,7 @@ None?
 
 ## Delegatecall with Selfdestruct Vulnerability
 
-[Playground Link](https://github.com/electisec/Solidity-Proxy-Playground/tree/main/src/delegatecall_with_selfdestruct)
+[Playground Link](https://github.com/yaudit/Solidity-Proxy-Playground/tree/main/src/delegatecall_with_selfdestruct)
 
 There are unexpected edge cases when `delegatecall` and `selfdestruct` are used together. Specifically, if contract A has a `delegatecall` to contract B, and the function in contract B contains `selfdestruct`, it is contract A that will be destroyed.
 
@@ -222,7 +222,7 @@ None?
 
 ## Delegatecall to Arbitrary Address
 
-[Playground Link](https://github.com/electisec/Solidity-Proxy-Playground)
+[Playground Link](https://github.com/yaudit/Solidity-Proxy-Playground)
 
 A `delegatecall` passes the execution from the proxy contract to another contract, but the state variables and context (msg.sender, msg.value) from the proxy contract are used. If the implementation contract that `delegatecall` passes execution to can be an arbitrary contract, substantial problems emerge. For one, a denial-of-service is possible by combining `delegatecall` with `selfdestruct` (see [the relevant section](#delegatecall-with-selfdestruct-vulnerability)). Another risk is that if users have used `approve` or set an allowance to trust the proxy contract containing the `delegatecall` to an arbitrary address, the arbitrary `delegatecall` target can be used to steal user funds. The address that a contract transfer execution to with `delegatecall` must be a trusted contract and must not be open-ended to allow a user to provide the address to delegate to.
 

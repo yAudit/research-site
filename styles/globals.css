@@ -23,9 +23,12 @@
   }
 }
 
-/* Anchor targets land below the sticky navbar (h-16 plus its 1px border). */
-html {
-  scroll-padding-top: 65px;
+/* Anchor targets land below the sticky navbar (h-16 plus its 1px border).
+   scroll-margin on the targets, not scroll-padding on html: with a sticky
+   header, scroll-padding makes the browser scroll the page whenever an
+   element inside the header gets focus. */
+[id] {
+  scroll-margin-top: 65px;
 }
 
 body {
@@ -312,7 +315,8 @@ code.inline-code-block::after {
 /* Heading link styling */
 .prose h1, .prose h2, .prose h3, .prose h4, .prose h5, .prose h6 {
   position: relative;
-  scroll-margin-top: 2rem;
+  /* 2rem of space below the sticky navbar (65px). */
+  scroll-margin-top: calc(65px + 2rem);
 }
 
 .prose h1:hover .heading-link,

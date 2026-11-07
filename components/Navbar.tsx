@@ -89,7 +89,7 @@ function NavDropdown({ group }: { group: NavGroup }) {
     function handleKeyDown(event: KeyboardEvent) {
       if (event.key === "Escape") {
         setOpen(false);
-        // preventScroll: the html scroll-padding-top would otherwise scroll
+        // preventScroll: returning focus to the sticky header must not scroll
         // the page to the top to bring the sticky header into view.
         buttonRef.current?.focus({ preventScroll: true });
       }
@@ -264,7 +264,7 @@ function MobileNavbar({
     return () => {
       document.removeEventListener("keydown", handleKeyDown);
       document.body.style.overflow = previousOverflow;
-      // preventScroll: the html scroll-padding-top would otherwise scroll the
+      // preventScroll: returning focus to the sticky header must not scroll the
       // page to the top to bring the sticky header into view.
       previousFocus?.focus({ preventScroll: true });
     };

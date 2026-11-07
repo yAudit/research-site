@@ -184,10 +184,10 @@ export default function ResearchPage({
 
   return (
     <div className="max-w-6xl bg-background flex mx-auto relative">
-      {/* Backdrop overlay for mobile */}
+      {/* Backdrop overlay for mobile, below the sticky navbar (65px) */}
       {isSidebarOpen && (
         <div
-          className="md:hidden fixed inset-0 bg-black bg-opacity-50 z-30"
+          className="md:hidden fixed inset-x-0 bottom-0 top-[65px] bg-black bg-opacity-50 z-30"
           onClick={() => setIsSidebarOpen(false)}
         />
       )}
@@ -227,7 +227,7 @@ export default function ResearchPage({
 
               {/* Search Dropdown */}
               {isSearchOpen && (filteredHeadings.length > 0 || filteredContent.length > 0) && (
-                <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg z-50 max-h-96 overflow-hidden">
+                <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg z-30 max-h-96 overflow-hidden">
                   <div className="flex h-80">
                     {/* Headings Section (1/4) */}
                     <div className="w-1/4 border-r border-gray-200 p-3 overflow-y-auto">
@@ -276,7 +276,8 @@ export default function ResearchPage({
               </div>
             </div>
 
-            <article ref={articleRef} className="overflow-y-auto p-6" style={{ height: 'calc(100vh - 22px - 120px)' }}>
+            {/* Fills the viewport below the sticky navbar (65px) and the search row (66px). */}
+            <article ref={articleRef} className="overflow-y-auto p-6" style={{ height: 'calc(100vh - 65px - 66px)' }}>
             <div
               className="prose prose-lg max-w-none prose-table:shadow-lg prose-table:border prose-td:p-2 prose-th:p-2 prose-a:text-title"
               dangerouslySetInnerHTML={{ __html: content }}

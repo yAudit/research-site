@@ -23,6 +23,11 @@
   }
 }
 
+/* Anchor targets land below the sticky navbar (h-16 plus its 1px border). */
+html {
+  scroll-padding-top: 65px;
+}
+
 body {
   color: var(--foreground);
   background: var(--background);

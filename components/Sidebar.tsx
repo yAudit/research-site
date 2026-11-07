@@ -80,16 +80,18 @@ export default function Sidebar({ category, currentSlug, isOpen = false, onClose
     );
   };
 
+  // On mobile the sidebar is a drawer below the sticky navbar (65px). On
+  // desktop it stays in the flow, under the navbar when the page scrolls.
   return (
     <div
       className={`
         w-60 bg-gray-50 p-3
-        md:relative md:translate-x-0
-        fixed left-0 top-0 z-40
+        md:relative md:top-0 md:z-auto md:translate-x-0
+        fixed left-0 top-[65px] z-40
         transition-transform duration-300 ease-in-out
         ${isOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}
       `}
-      style={{ height: 'calc(100vh - 22px)' }}
+      style={{ height: 'calc(100vh - 65px)' }}
     >
       <div className="mb-6 overflow-y-auto" style={{ height: 'calc(100% - 80px)' }}>
           {Object.entries(structure).map(([slug, item]) =>

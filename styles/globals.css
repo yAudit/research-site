@@ -504,3 +504,9 @@ code.inline-code-block::after {
     font-size: 0.8rem;
   }
 }
+
+/* Always reserve the scrollbar's space, so the navbar sits in the same place
+   on short pages without a scrollbar as on every other page and site. */
+html {
+  scrollbar-gutter: stable;
+}

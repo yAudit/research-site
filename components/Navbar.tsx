@@ -1,153 +1,328 @@
-import React, { useState, useEffect } from "react";
-import Link from "next/link";
+import { ChevronDown, Menu, X } from "lucide-react";
 import Image from "next/image";
+import Link from "next/link";
+import { useEffect, useId, useRef, useState } from "react";
 
-// Button component for consistent styling
-function Button({ text }: { text: string }) {
-  return (
-    <button className="px-6 py-3 text-sm text-zinc-400 hover:text-deepblue hover:bg-white hover:bg-white/5">
-      {text}
-    </button>
+// The same navbar as yaudit.dev, so moving between the yAudit sites feels
+// like one site. Every link opens in the same tab.
+
+interface NavItem {
+  label: string;
+  href: string;
+  // The section this site is: it links to this site's home and is shown as
+  // active on every page.
+  current?: boolean;
+}
+
+interface NavGroup {
+  label: string;
+  items: NavItem[];
+}
+
+type NavEntry = NavItem | NavGroup;
+
+const NAV: NavEntry[] = [
+  { label: "Services", href: "https://yaudit.dev/services" },
+  { label: "yAgent", href: "https://yaudit.dev/yagent" },
+  {
+    label: "Programs",
+    items: [
+      { label: "Fellowships", href: "https://yaudit.dev/fellowships" },
+      { label: "yBorg", href: "https://yaudit.dev/yborg" },
+    ],
+  },
+  {
+    label: "Resources",
+    items: [
+      { label: "Reports", href: "https://reports.yaudit.dev/" },
+      { label: "Blog", href: "https://blog.yaudit.dev/" },
+      { label: "Research", href: "/", current: true },
+    ],
+  },
+  { label: "Team", href: "https://yaudit.dev/team" },
+];
+
+const CONTACT_HREF = "https://yaudit.dev/contact-us";
+
+function isGroup(entry: NavEntry): entry is NavGroup {
+  return "items" in entry;
+}
+
+const ACTIVE_ITEM = NAV.flatMap((entry) =>
+  isGroup(entry) ? entry.items : [entry]
+).find((item) => item.current);
+
+function NavLink({
+  item,
+  className,
+  onClick,
+}: {
+  item: NavItem;
+  className: string;
+  onClick?: () => void;
+}) {
+  return item.current ? (
+    <Link href={item.href} className={className} onClick={onClick}>
+      {item.label}
+    </Link>
+  ) : (
+    <a href={item.href} className={className} onClick={onClick}>
+      {item.label}
+    </a>
   );
 }
 
-const Navbar = () => {
-  const [menuOpen, setMenuOpen] = useState(false);
+// A menu entry that opens a list of links. It opens on hover and on click;
+// a keyboard click toggles it, and Escape or a click outside closes it.
+function NavDropdown({ group }: { group: NavGroup }) {
+  const [open, setOpen] = useState(false);
+  const rootRef = useRef<HTMLDivElement>(null);
+  const buttonRef = useRef<HTMLButtonElement>(null);
+  const listId = useId();
+  const active = ACTIVE_ITEM !== undefined && group.items.includes(ACTIVE_ITEM);
 
-  // Prevent body scroll when mobile menu is open
   useEffect(() => {
-    if (menuOpen) {
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = 'unset';
+    if (!open) return;
+    function handlePointerDown(event: PointerEvent) {
+      if (!rootRef.current?.contains(event.target as Node)) setOpen(false);
     }
-
-    // Cleanup function to restore scroll when component unmounts
+    function handleKeyDown(event: KeyboardEvent) {
+      if (event.key === "Escape") {
+        setOpen(false);
+        // preventScroll: returning focus to the sticky header must not scroll
+        // the page to the top to bring the sticky header into view.
+        buttonRef.current?.focus({ preventScroll: true });
+      }
+    }
+    document.addEventListener("pointerdown", handlePointerDown);
+    document.addEventListener("keydown", handleKeyDown);
     return () => {
-      document.body.style.overflow = 'unset';
+      document.removeEventListener("pointerdown", handlePointerDown);
+      document.removeEventListener("keydown", handleKeyDown);
     };
-  }, [menuOpen]);
+  }, [open]);
 
   return (
-    <>
-      <nav className="w-full flex h-22 items-center max-w-6xl justify-between align-center top-0 py-6 m-auto">
-        {/* Logo section */}
-        <div className="flex flex-row gap-4 text-primary items-center text-xl ml-4">
-          <Link href="https://yaudit.dev/" className="flex-shrink-0">
-            <Image
-              alt="Logo"
-              src="/logo.svg"
-              width={180}
-              height={40}
-              className="h-10 md:h-12 lg:h-10 w-auto min-w-[120px] md:min-w-[150px] lg:min-w-[180px]"
-              priority
-            />
-          </Link>
-        </div>
+    <div
+      ref={rootRef}
+      className="relative"
+      onMouseEnter={() => setOpen(true)}
+      onMouseLeave={() => setOpen(false)}
+      onBlur={(event) => {
+        if (!rootRef.current?.contains(event.relatedTarget as Node)) {
+          setOpen(false);
+        }
+      }}
+    >
+      <button
+        ref={buttonRef}
+        type="button"
+        aria-expanded={open}
+        aria-controls={listId}
+        // A pointer click keeps the list open after hover opened it.
+        onClick={(event) => setOpen(event.detail === 0 ? !open : true)}
+        className={`flex items-center gap-1 px-5 py-3 decoration-deepblue decoration-2 underline-offset-8 transition hover:text-deepblue hover:underline ${
+          active || open ? "text-deepblue" : "text-zinc-400"
+        }`}
+      >
+        {group.label}
+        <ChevronDown
+          aria-hidden="true"
+          className={`h-4 w-4 transition-transform ${open ? "rotate-180" : ""}`}
+        />
+      </button>
 
-        {/* Mobile menu button */}
-        <button
-          className="px-4 py-2 lg:hidden mr-4 text-zinc-700 hover:text-deepblue"
-          onClick={() => setMenuOpen(!menuOpen)}
-          aria-label="Toggle mobile menu"
-        >
-          <span className="text-2xl">☰</span>
-        </button>
-
-        {/* Desktop menu */}
-        <div className="hidden lg:flex flex-row items-center gap-1">
-          <Link href="https://reports.yaudit.dev/">
-            <Button text="Reports" />
-          </Link>
-          <Link href="https://blog.yaudit.dev/">
-            <Button text="Blog" />
-          </Link>
-          <Link href="https://research.yaudit.dev/">
-            <button className="px-6 py-3 text-sm hover:text-deepblue font-medium text-deepblue">
-              Research
-            </button>
-          </Link>
-          <Link href="https://yaudit.dev/fellowships">
-            <Button text="Fellowships" />
-          </Link>
-          <Link href="https://yaudit.dev/services">
-            <Button text="Services" />
-          </Link>
-          <Link href="https://yaudit.dev/team">
-            <Button text="Team" />
-          </Link>
-          <Link href="https://yaudit.dev/contact-us">
-            <button className="px-8 py-3 text-sm bg-deepblue text-white hover:bg-white hover:text-deepblue hover:border hover:border-deepblue transition-all duration-700">
-              Contact
-            </button>
-          </Link>
-
-        </div>
-      </nav>
-
-      {/* Mobile menu overlay */}
-      {menuOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden" onClick={() => setMenuOpen(false)}>
-          {/* Mobile menu panel */}
-          <div 
-            className="fixed top-0 right-0 h-full w-80 bg-white shadow-lg z-50 transform transition-transform duration-300 ease-in-out"
-            onClick={(e) => e.stopPropagation()}
-          >
-            {/* Menu header */}
-            <div className="flex justify-between items-center p-6 border-b border-gray-200">
-              <h2 className="text-lg font-semibold text-gray-900">Menu</h2>
-              <button
-                onClick={() => setMenuOpen(false)}
-                className="p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
-                aria-label="Close menu"
-              >
-                <span className="text-xl">✕</span>
-              </button>
-            </div>
-
-            {/* Menu items */}
-            <div className="flex flex-col p-4">
-              <Link href="https://reports.yaudit.dev/" onClick={() => setMenuOpen(false)}>
-                <button className="w-full text-left p-4 text-gray-700 hover:text-deepblue hover:bg-gray-50 transition-colors">
-                  Reports
-                </button>
-              </Link>
-              <Link href="https://blog.yaudit.dev/" onClick={() => setMenuOpen(false)}>
-                <button className="w-full text-left p-4 text-gray-700 hover:text-deepblue hover:bg-gray-50 transition-colors">
-                  Blog
-                </button>
-              </Link>
-              <Link href="https://research.yaudit.dev/" onClick={() => setMenuOpen(false)}>
-                <button className="w-full text-left p-4 font-medium text-deepblue hover:text-deepblue hover:bg-blue-50 transition-colors">
-                  Research
-                </button>
-              </Link>
-              <Link href="https://yaudit.dev/fellowships" onClick={() => setMenuOpen(false)}>
-                <button className="w-full text-left p-4 text-gray-700 hover:text-deepblue hover:bg-gray-50 transition-colors">
-                  Fellowships
-                </button>
-              </Link>
-              <Link href="https://yaudit.dev/services" onClick={() => setMenuOpen(false)}>
-                <button className="w-full text-left p-4 text-gray-700 hover:text-deepblue hover:bg-gray-50 transition-colors">
-                  Services
-                </button>
-              </Link>
-              <Link href="https://yaudit.dev/team" onClick={() => setMenuOpen(false)}>
-                <button className="w-full text-left p-4 text-gray-700 hover:text-deepblue hover:bg-gray-50 transition-colors">
-                  Team
-                </button>
-              </Link>
-              <Link href="https://yaudit.dev/contact-us" onClick={() => setMenuOpen(false)}>
-                <button className="w-full text-left p-4 mt-2 bg-deepblue text-white hover:bg-white hover:text-deepblue hover:border hover:border-deepblue font-medium transition-all duration-700">
-                  Contact
-                </button>
-              </Link>
-            </div>
+      {open && (
+        // The padding lines the list up with the bottom of the header and
+        // keeps the pointer inside the entry on its way down.
+        <div id={listId} className="absolute left-0 top-full pt-2.5">
+          <div className="min-w-[12rem] border border-zinc-950/10 bg-white py-2 shadow-lg">
+            {group.items.map((item) => (
+              <NavLink
+                key={item.label}
+                item={item}
+                onClick={() => setOpen(false)}
+                className={`block whitespace-nowrap px-5 py-2.5 transition hover:bg-deepblue/5 hover:text-deepblue ${
+                  item === ACTIVE_ITEM ? "text-deepblue" : "text-zinc-500"
+                }`}
+              />
+            ))}
           </div>
         </div>
       )}
+    </div>
+  );
+}
+
+// yaudit.dev defines its Tailwind screens as ranges (md 768-1150px, lg from
+// 1150px). This site uses the default min-width screens, so "from 768px" is
+// "md:" and "from 1150px" is the arbitrary "min-[1150px]:".
+//
+// The side margins match yaudit.dev, so the logo and Contact sit in the same
+// place on every yAudit site.
+function Header({
+  menuOpen,
+  setMenuOpen,
+}: {
+  menuOpen: boolean;
+  setMenuOpen: (menuOpen: boolean) => void;
+}) {
+  return (
+    <header className="sticky top-0 z-40 w-full border-b border-zinc-950/10 bg-white/95 backdrop-blur">
+      <div className="flex h-16 items-center justify-between px-6 min-[1150px]:px-[max(2rem,min(20vw,calc((100vw_-_1000px)/2)))]">
+        <div className="flex items-center gap-3">
+          <a href="https://yaudit.dev/">
+            <Image
+              src="/logo.svg"
+              alt="yAudit"
+              width={115}
+              height={36}
+              className="h-9 w-auto"
+              preload
+            />
+          </a>
+          {ACTIVE_ITEM && (
+            <span className="hidden border-l border-zinc-300 pl-3 text-sm font-semibold uppercase tracking-[0.18em] text-zinc-500 md:inline">
+              {ACTIVE_ITEM.label}
+            </span>
+          )}
+        </div>
+
+        <div className="flex items-center">
+          <nav className="hidden items-center text-sm font-medium min-[1150px]:flex">
+            {NAV.map((entry) =>
+              isGroup(entry) ? (
+                <NavDropdown key={entry.label} group={entry} />
+              ) : (
+                <NavLink
+                  key={entry.label}
+                  item={entry}
+                  className={`px-5 py-3 decoration-deepblue decoration-2 underline-offset-8 transition hover:text-deepblue hover:underline ${
+                    entry === ACTIVE_ITEM ? "text-deepblue" : "text-zinc-400"
+                  }`}
+                />
+              )
+            )}
+          </nav>
+
+          <a
+            href={CONTACT_HREF}
+            className="inline-flex items-center border border-deepblue bg-deepblue px-8 py-3 text-sm font-semibold text-white transition duration-700 hover:bg-white hover:text-deepblue min-[1150px]:ml-3"
+          >
+            Contact
+          </a>
+
+          <button
+            type="button"
+            className="ml-2 px-3 py-3 text-neutral-950 min-[1150px]:hidden"
+            aria-label="Open menu"
+            aria-expanded={menuOpen}
+            onClick={() => setMenuOpen(!menuOpen)}
+          >
+            <Menu />
+          </button>
+        </div>
+      </div>
+    </header>
+  );
+}
+
+function MobileNavbar({
+  setMenuOpen,
+}: {
+  setMenuOpen: (menuOpen: boolean) => void;
+}) {
+  const closeRef = useRef<HTMLButtonElement>(null);
+  const menuRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const previousFocus = document.activeElement as HTMLElement | null;
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    closeRef.current?.focus();
+
+    function handleKeyDown(event: KeyboardEvent) {
+      if (event.key === "Escape") {
+        setMenuOpen(false);
+      } else if (event.key === "Tab") {
+        const focusable = menuRef.current?.querySelectorAll<HTMLElement>(
+          "a[href], button:not([disabled])"
+        );
+        if (!focusable?.length) return;
+        const first = focusable[0];
+        const last = focusable[focusable.length - 1];
+        if (event.shiftKey && document.activeElement === first) {
+          event.preventDefault();
+          last.focus();
+        } else if (!event.shiftKey && document.activeElement === last) {
+          event.preventDefault();
+          first.focus();
+        }
+      }
+    }
+    document.addEventListener("keydown", handleKeyDown);
+    return () => {
+      document.removeEventListener("keydown", handleKeyDown);
+      document.body.style.overflow = previousOverflow;
+      // preventScroll: returning focus to the sticky header must not scroll the
+      // page to the top to bring the sticky header into view.
+      previousFocus?.focus({ preventScroll: true });
+    };
+  }, [setMenuOpen]);
+
+  const close = () => setMenuOpen(false);
+  const linkClass = (item: NavItem) =>
+    `block px-6 py-4 w-full text-center text-xl hover:text-deepblue hover:bg-deepblue hover:bg-opacity-5 duration-700 ${
+      item === ACTIVE_ITEM ? "text-deepblue" : "text-zinc-400"
+    }`;
+
+  return (
+    <div
+      ref={menuRef}
+      role="dialog"
+      aria-modal="true"
+      aria-label="Navigation menu"
+      className="fixed inset-0 z-50 overflow-y-auto overscroll-contain bg-white"
+    >
+      <div className="pt-8 mx-auto flex flex-col p-8 gap-2">
+        <button
+          ref={closeRef}
+          type="button"
+          aria-label="Close menu"
+          onClick={close}
+          className="text-deepblue"
+        >
+          <X size={32} />
+        </button>
+
+        {/* On phones the groups are flattened into one plain list. */}
+        {NAV.flatMap((entry) => (isGroup(entry) ? entry.items : [entry])).map((item) => (
+          <NavLink
+            key={item.label}
+            item={item}
+            onClick={close}
+            className={linkClass(item)}
+          />
+        ))}
+
+        <a
+          href={CONTACT_HREF}
+          onClick={close}
+          className="block p-6 w-full text-center text-xl text-white bg-deepblue hover:bg-white hover:text-deepblue hover:border hover:border-deepblue duration-700"
+        >
+          Contact
+        </a>
+      </div>
+    </div>
+  );
+}
+
+export default function Navbar() {
+  const [menuOpen, setMenuOpen] = useState(false);
+  return (
+    <>
+      <Header menuOpen={menuOpen} setMenuOpen={setMenuOpen} />
+      {menuOpen && <MobileNavbar setMenuOpen={setMenuOpen} />}
     </>
   );
-};
-
-export default Navbar;
+}

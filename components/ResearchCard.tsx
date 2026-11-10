@@ -1,7 +1,7 @@
 import React from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { Shield, BookOpen, Target, ArrowRight, Key } from "lucide-react";
+import { Shield, BookOpen, Target, Key } from "lucide-react";
 
 interface Author {
   name: string;
@@ -84,11 +84,6 @@ const ResearchCard: React.FC<ResearchCategoryProps> = ({
           </div>
         </div>
       )}
-
-      <div className="mt-8 flex items-center text-deepblue font-medium group-hover:text-deepblue">
-        <span>Explore {title}</span>
-        <ArrowRight className="ml-2 h-5 w-5 transform group-hover:translate-x-1 transition-transform" />
-      </div>
     </Link>
   );
 };

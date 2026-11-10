@@ -32,15 +32,17 @@ export default function Home({ categories }: HomeProps) {
 
   return (
     <div className="bg-background">
-      <main className="max-w-7xl mx-auto py-12 sm:px-4 lg:px-6">
+      {/* The same side margins as the navbar (components/Navbar.tsx), so the
+          cards start under the logo and end under the Contact button. */}
+      <main className="py-12 px-6 min-[1150px]:px-[max(2rem,min(20vw,calc((100vw_-_1000px)/2)))]">
         {/* Hero Section */}
-        <div className="px-4 sm:px-0 mb-20 text-center">
+        <div className="mb-20 text-center">
           <h1 className="text-6xl font-bold text-title mb-4">Explore <span className="text-deepblue">Research</span></h1>
           <p className="text-xl text-body">Advanced security research for Web3 and cryptographic systems</p>
         </div>
 
         {/* Research Categories Section */}
-        <div className="px-4 sm:px-0 mb-12">
+        <div className="mb-12">
           <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
             {Object.entries(categories)?.map(([key, category]) => (
               <ResearchCard

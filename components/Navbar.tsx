@@ -22,12 +22,21 @@ interface NavGroup {
 type NavEntry = NavItem | NavGroup;
 
 const NAV: NavEntry[] = [
-  { label: "Services", href: "https://yaudit.dev/services" },
+  {
+    label: "Services",
+    items: [
+      { label: "Smart Contract Audits", href: "https://yaudit.dev/services/smart-contract-audits" },
+      { label: "ZK Audits", href: "https://yaudit.dev/zk" },
+      { label: "Boosted Audits", href: "https://yaudit.dev/services/boosted-audits" },
+    ],
+  },
   { label: "yAgent", href: "https://yaudit.dev/yagent" },
   {
     label: "Programs",
     items: [
       { label: "Fellowships", href: "https://yaudit.dev/fellowships" },
+      { label: "zBlock 1", href: "https://yaudit.dev/zBlock1" },
+      { label: "zBlock 2", href: "https://yaudit.dev/zBlock2" },
       { label: "yBorg", href: "https://yaudit.dev/yborg" },
     ],
   },
